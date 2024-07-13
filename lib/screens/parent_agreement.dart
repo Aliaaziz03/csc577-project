@@ -1,6 +1,75 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
-class ParentAgreement extends StatelessWidget {
+class ParentAgreement extends StatefulWidget {
+  final bool allInformationSaved;
+
+  ParentAgreement({required this.allInformationSaved});
+
+  @override
+  _ParentAgreementState createState() => _ParentAgreementState();
+}
+
+class _ParentAgreementState extends State<ParentAgreement> {
+  bool isCheckboxChecked = false;
+  bool isSubmitting = false;
+
+  void _submitAgreement() {
+    if (!isCheckboxChecked) {
+      Fluttertoast.showToast(
+        msg: "Please confirm the agreement",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+      return;
+    }
+
+    if (!widget.allInformationSaved) {
+      Fluttertoast.showToast(
+        msg: "Please save all required information first",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+      return;
+    }
+
+    setState(() {
+      isSubmitting = true;
+    });
+
+    // Simulate submission process (replace with your actual submission logic)
+    Future.delayed(Duration(seconds: 2), () {
+      setState(() {
+        isSubmitting = false;
+      });
+
+      if (isSubmitting) {
+        Fluttertoast.showToast(
+          msg: "Successfully submitted",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+        );
+
+        // Navigate to dashboard or student list
+        Navigator.pushNamed(context, '/student_list');
+      } else {
+        Fluttertoast.showToast(
+          msg: "Failed to submit",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+        );
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,8 +110,12 @@ class ParentAgreement extends StatelessWidget {
             Row(
               children: [
                 Checkbox(
-                  value: true,
-                  onChanged: (value) {},
+                  value: isCheckboxChecked,
+                  onChanged: (value) {
+                    setState(() {
+                      isCheckboxChecked = value ?? false;
+                    });
+                  },
                 ),
                 Text('I confirm'),
               ],
@@ -50,10 +123,10 @@ class ParentAgreement extends StatelessWidget {
             SizedBox(height: 16),
             Center(
               child: ElevatedButton(
-                onPressed: () {
-                  // Submit logic here
-                },
-                child: Text('Submit'),
+                onPressed: isSubmitting ? null : _submitAgreement,
+                child: isSubmitting
+                    ? CircularProgressIndicator()
+                    : Text('Submit'),
               ),
             ),
           ],
