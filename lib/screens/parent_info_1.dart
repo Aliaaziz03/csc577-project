@@ -4,7 +4,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
-import 'package:csc577_project/screens/parent_agreement.dart';
 
 class ParentInfo1 extends StatefulWidget {
   @override
@@ -18,15 +17,28 @@ class _ParentInfo1State extends State<ParentInfo1> {
   final TextEditingController relationController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController occupationController = TextEditingController();
-  final TextEditingController incomeController = TextEditingController();
-  final TextEditingController dependentsController = TextEditingController();
   final TextEditingController workPhoneController = TextEditingController();
   final TextEditingController workAddressController = TextEditingController();
 
   bool isSaved = false;
   String? pdfFileName;
   String? pdfFileUrl;
-  final String studentEmail = "student@example.com"; // Replace with the actual student email
+  final String studentEmail =
+      "student@example.com"; // Replace with the actual student email
+
+  String? selectedIncome;// = 'Below RM1,000';
+  String? selectedDependents;// = '0';
+
+  final List<String> incomeOptions = [
+    'Below RM1,000',
+    'RM1,000 - RM3,000',
+    'RM3,000 - RM5,000',
+    'RM5,000 - RM7,000',
+    'Above RM7,000',
+  ];
+
+  final List<String> dependentsOptions =
+      List.generate(10, (index) => index.toString()) + ['Others'];
 
   @override
   void initState() {
@@ -50,8 +62,8 @@ class _ParentInfo1State extends State<ParentInfo1> {
           relationController.text = data['parent_relation'] ?? '';
           emailController.text = data['parent_email'] ?? '';
           occupationController.text = data['parent_occupation'] ?? '';
-          incomeController.text = data['parent_income'] ?? '';
-          dependentsController.text = data['parent_dependents'] ?? '';
+          selectedIncome = data['parent_income'] ?? 'Below RM1,000'; //'';
+          selectedDependents = data['parent_dependents'] ?? '0';
           workPhoneController.text = data['parent_work_phone'] ?? '';
           workAddressController.text = data['parent_work_address'] ?? '';
           pdfFileName = data['parent_id_card_name'] ?? '';
@@ -72,7 +84,8 @@ class _ParentInfo1State extends State<ParentInfo1> {
 
   Future<void> _pickPDF() async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
+      FilePickerResult? result = await FilePicker.platform
+          .pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
 
       if (result != null) {
         PlatformFile file = result.files.first;
@@ -118,15 +131,14 @@ class _ParentInfo1State extends State<ParentInfo1> {
         relationController.text.isEmpty ||
         emailController.text.isEmpty ||
         occupationController.text.isEmpty ||
-        incomeController.text.isEmpty ||
-        dependentsController.text.isEmpty) {
+        selectedIncome == null ||
+        selectedDependents == null) {
       Fluttertoast.showToast(
         msg: "Please fill in all required fields",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.black.withOpacity(0.5),
+        backgroundColor: Colors.red,
         textColor: Colors.white,
-        fontSize: 16.0,
       );
       return false; // Return false if required fields are not filled
     }
@@ -142,8 +154,8 @@ class _ParentInfo1State extends State<ParentInfo1> {
         'parent_relation': relationController.text,
         'parent_email': emailController.text,
         'parent_occupation': occupationController.text,
-        'parent_income': incomeController.text,
-        'parent_dependents': dependentsController.text,
+        'parent_income': selectedIncome,
+        'parent_dependents': selectedDependents,
         'parent_work_phone': workPhoneController.text,
         'parent_work_address': workAddressController.text,
         'parent_id_card_name': pdfFileName,
@@ -154,9 +166,8 @@ class _ParentInfo1State extends State<ParentInfo1> {
         msg: "Data saved successfully",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.black.withOpacity(0.5),
+        backgroundColor: Colors.green,
         textColor: Colors.white,
-        fontSize: 16.0,
       );
       setState(() {
         isSaved = true;
@@ -179,7 +190,7 @@ class _ParentInfo1State extends State<ParentInfo1> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Parent/Guardian 1 Information'),
+        title: Text('Parent/Guardian 1 Information',style: TextStyle(color: Colors.white),),
         backgroundColor: Color(0xFF1C5153), // Custom app bar color
       ),
       body: Padding(
@@ -220,13 +231,51 @@ class _ParentInfo1State extends State<ParentInfo1> {
                 controller: occupationController,
                 labelText: 'Occupation *',
               ),
-              CustomTextField(
-                controller: incomeController,
-                labelText: 'Monthly Income *',
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: DropdownButtonFormField<String>(
+                  value: selectedIncome,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedIncome = value;
+                    });
+                  },
+                  items: incomeOptions.map((String option) {
+                    return DropdownMenuItem<String>(
+                      value: option,
+                      child: Text(option),
+                    );
+                  }).toList(),
+                  decoration: InputDecoration(
+                    labelText: 'Monthly Income *',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                ),
               ),
-              CustomTextField(
-                controller: dependentsController,
-                labelText: 'Number of Dependents *',
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0), //
+                child: DropdownButtonFormField<String>(
+                  value: selectedDependents,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedDependents = value;
+                    });
+                  },
+                  items: dependentsOptions.map((String option) {
+                    return DropdownMenuItem<String>(
+                      value: option,
+                      child: Text(option),
+                    );
+                  }).toList(),
+                  decoration: InputDecoration(
+                    labelText: 'Number of Dependents *',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                ),
               ),
               CustomTextField(
                 controller: workPhoneController,
@@ -242,11 +291,11 @@ class _ParentInfo1State extends State<ParentInfo1> {
                   children: [
                     ElevatedButton(
                       onPressed: () async {
-                        bool saved = await _saveParentInfo();
-                        
+                        await _saveParentInfo();
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFD3E3D1), // Custom button color
+                        backgroundColor:
+                            Color(0xFFD3E3D1), // Custom button color
                         foregroundColor: Colors.black,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
@@ -278,14 +327,15 @@ class _ParentInfo1State extends State<ParentInfo1> {
                     ElevatedButton(
                       onPressed: _pickPDF,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF1C5153), // Custom button color
-                        foregroundColor: Colors.white,
+                        backgroundColor:
+                            Color(0xFFD3E3D1), // Custom button color
+                        foregroundColor: Colors.black,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
                         minimumSize: Size(150, 50),
                       ),
-                      child: Text('Upload PDF'),
+                      child: Text('Upload ID Card'),
                     ),
                     if (pdfFileName != null) Text('Uploaded: $pdfFileName'),
                   ],
@@ -302,8 +352,13 @@ class _ParentInfo1State extends State<ParentInfo1> {
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final String labelText;
+  final TextInputType? keyboardType;
 
-  CustomTextField({required this.controller, required this.labelText});
+  CustomTextField({
+    required this.controller,
+    required this.labelText,
+    this.keyboardType,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -311,6 +366,7 @@ class CustomTextField extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextField(
         controller: controller,
+        keyboardType: keyboardType,
         decoration: InputDecoration(
           labelText: labelText,
           border: OutlineInputBorder(

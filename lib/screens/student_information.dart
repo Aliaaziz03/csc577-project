@@ -118,7 +118,7 @@ class _StudentInformationState extends State<StudentInformation> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Student Information'),
+        title: Text('Student Information',style: TextStyle(color: Colors.white),),
         backgroundColor: Color(0xFF1C5153),
       ),
       body: Padding(
@@ -325,12 +325,14 @@ class _StudentInformationState extends State<StudentInformation> {
                     }
                   },
                   child: Text('Save'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF1C5153),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
+                   style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFD3E3D1), // Custom button color
+                foregroundColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                minimumSize: Size(150, 50),
+              ),
                 ),
               ),
             ],
@@ -399,7 +401,7 @@ class CustomTextField extends StatelessWidget {
         decoration: InputDecoration(
           labelText: labelText,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
+            borderRadius: BorderRadius.circular(30.0),
           ),
         ),
       ),
@@ -429,7 +431,7 @@ class DropdownField extends StatelessWidget {
         decoration: InputDecoration(
           labelText: labelText,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
+            borderRadius: BorderRadius.circular(30.0),
           ),
         ),
         items: items.map((String item) {

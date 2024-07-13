@@ -76,7 +76,7 @@ class _ParentAgreementState extends State<ParentAgreement> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Parent Agreement'),
+        title: Text('Parent Agreement',style: TextStyle(color: Colors.white),),
         backgroundColor: Color(0xFF1C5153), // Custom app bar color
       ),
       body: Padding(

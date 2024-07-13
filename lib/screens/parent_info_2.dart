@@ -1,12 +1,17 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:csc577_project/screens/parent_agreement.dart';
+
 
 class ParentInfo2 extends StatefulWidget {
   @override
   _ParentInfo2State createState() => _ParentInfo2State();
 }
+
 
 class _ParentInfo2State extends State<ParentInfo2> {
   final TextEditingController nameController2 = TextEditingController();
@@ -18,9 +23,11 @@ class _ParentInfo2State extends State<ParentInfo2> {
   final TextEditingController workPhoneController2 = TextEditingController();
   final TextEditingController workAddressController2 = TextEditingController();
 
+
   bool _isSubmitting = false;
   String? selectedIncome2;
   String? selectedDependents2;
+
 
   final List<String> incomeOptions = [
     'Below RM1,000',
@@ -30,20 +37,25 @@ class _ParentInfo2State extends State<ParentInfo2> {
     'Above RM7,000',
   ];
 
+
   final List<String> dependentsOptions =
       List.generate(10, (index) => index.toString()) + ['Others'];
+
 
   @override
   void initState() {
     super.initState();
-    // Initialize form with existing data if email is provided
-    emailController2.addListener(fetchParentInfo2);
-    fetchParentInfo2(); // Fetch data immediately when widget is first loaded
+    getEmail().then((email) {
+      if (email != null) {
+        emailController2.text = email;
+        fetchParentInfo2(); // Fetch data immediately when email is retrieved
+      }
+    });
   }
+
 
   @override
   void dispose() {
-    emailController2.removeListener(fetchParentInfo2);
     emailController2.dispose();
     nameController2.dispose();
     idController2.dispose();
@@ -55,12 +67,23 @@ class _ParentInfo2State extends State<ParentInfo2> {
     super.dispose();
   }
 
+
+  Future<String?> getEmail() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_email');
+  }
+
+
   Future<void> fetchParentInfo2() async {
+    if (emailController2.text.isEmpty) return;
+
+
     try {
       DocumentSnapshot document = await FirebaseFirestore.instance
           .collection('parents')
           .doc(emailController2.text)
           .get();
+
 
       if (document.exists) {
         Map<String, dynamic> data =
@@ -76,18 +99,23 @@ class _ParentInfo2State extends State<ParentInfo2> {
           workPhoneController2.text = data['parent_work_phone2'] ?? '';
           workAddressController2.text = data['parent_work_address2'] ?? '';
         });
+        print("Data fetched successfully: $data");
+      } else {
+        print("No data found for email: ${emailController2.text}");
       }
     } catch (e) {
       Fluttertoast.showToast(
-        msg: "Failed to load data",
+        msg: "Failed to load data: $e",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         backgroundColor: Colors.black.withOpacity(0.5),
         textColor: Colors.white,
         fontSize: 16.0,
       );
+      print("Error fetching data: $e");
     }
   }
+
 
   Future<bool> _saveParentInfo2(BuildContext context) async {
     if (nameController2.text.isEmpty ||
@@ -108,6 +136,7 @@ class _ParentInfo2State extends State<ParentInfo2> {
       return false;
     }
 
+
     final parentInfo2 = {
       'parent_name2': nameController2.text,
       'parent_id2': idController2.text,
@@ -121,15 +150,18 @@ class _ParentInfo2State extends State<ParentInfo2> {
       'parent_work_address2': workAddressController2.text,
     };
 
+
     setState(() {
       _isSubmitting = true;
     });
+
 
     try {
       await FirebaseFirestore.instance
           .collection('parents')
           .doc(emailController2.text)
           .set(parentInfo2, SetOptions(merge: true));
+
 
       Fluttertoast.showToast(
         msg: "Parent information saved successfully",
@@ -138,17 +170,19 @@ class _ParentInfo2State extends State<ParentInfo2> {
         backgroundColor: Colors.green,
         textColor: Colors.white,
       );
+      print("Data saved successfully: $parentInfo2");
 
-      // Navigate after showing success toast
+
       return true;
     } catch (e) {
       Fluttertoast.showToast(
-        msg: "Failed to save parent information",
+        msg: "Failed to save parent information: $e",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         backgroundColor: Colors.red,
         textColor: Colors.white,
       );
+      print("Error saving data: $e");
       return false;
     } finally {
       setState(() {
@@ -157,11 +191,12 @@ class _ParentInfo2State extends State<ParentInfo2> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Mother/Guardian 2 Information'),
+        title: Text('Mother/Guardian 2 Information',style: TextStyle(color: Colors.white),),
         backgroundColor: Color(0xFF1C5153), // Custom app bar color
       ),
       body: ListView(
@@ -294,16 +329,19 @@ class _ParentInfo2State extends State<ParentInfo2> {
   }
 }
 
+
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final String labelText;
   final TextInputType? keyboardType;
+
 
   CustomTextField({
     required this.controller,
     required this.labelText,
     this.keyboardType,
   });
+
 
   @override
   Widget build(BuildContext context) {
@@ -322,3 +360,9 @@ class CustomTextField extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
+

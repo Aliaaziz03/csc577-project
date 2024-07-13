@@ -49,7 +49,7 @@ class StudentDashboard extends StatelessWidget {
                               backgroundColor: Color.fromARGB(255, 157, 216, 159), // Button background color
                               foregroundColor: Colors.white, // Button text color
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(30), // Set border radius to 30
                               ),
                             ),
                             child: Text('Student Information', textAlign: TextAlign.center),
@@ -67,7 +67,7 @@ class StudentDashboard extends StatelessWidget {
                               backgroundColor: Color.fromARGB(255, 157, 216, 159),  // Button background color
                               foregroundColor: Colors.white, // Button text color
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(30), // Set border radius to 30
                               ),
                             ),
                             child: Text('Parents Information', textAlign: TextAlign.center),
@@ -75,23 +75,46 @@ class StudentDashboard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Container(
-                      width: 125,
-                      height: 125,
-                      margin: EdgeInsets.all(8), // Adding a gap between containers
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/parent_agreement');
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromARGB(255, 157, 216, 159),  // Button background color
-                          foregroundColor: Colors.white, // Button text color
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 125,
+                          height: 125,
+                          margin: EdgeInsets.all(8), // Adding a gap between containers
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/parent_agreement');
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color.fromARGB(255, 157, 216, 159),  // Button background color
+                              foregroundColor: Colors.white, // Button text color
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30), // Set border radius to 30
+                              ),
+                            ),
+                            child: Text('Parents Agreement', textAlign: TextAlign.center),
                           ),
                         ),
-                        child: Text('Parents Agreement', textAlign: TextAlign.center),
-                      ),
+                        Container(
+                          width: 125,
+                          height: 125,
+                          margin: EdgeInsets.all(8), // Adding a gap between containers
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/teacher_dashboard');
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color.fromARGB(255, 157, 216, 159),  // Button background color
+                              foregroundColor: Colors.white, // Button text color
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30), // Set border radius to 30
+                              ),
+                            ),
+                            child: Text('List of Registered Students', textAlign: TextAlign.center),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

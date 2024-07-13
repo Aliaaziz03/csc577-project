@@ -38,6 +38,7 @@ class MyApp extends StatelessWidget {
         primaryColorDark: Color(0xFF303F9F), // Use your primaryDarkColor
         hintColor: Color(0xFFFF4081), // Use your accentColor
       ),
+      debugShowCheckedModeBanner: false, // Disable the debug banner
       initialRoute: '/',
       routes: {
         '/': (context) => OnboardingScreen(),
