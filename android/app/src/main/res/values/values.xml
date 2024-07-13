@@ -1,0 +1,25 @@
+<resources>
+    <!-- String resources -->
+    <string name="app_name">Akademi</string>
+    <string name="project_id">akademi-c1fdf</string>
+    <string name="project_number">556613213756</string>
+    <string name="parent_org">uitm.edu.my</string>
+    <string name="web_api_key">No Web API Key for this project</string>
+    <string name="environment_type">Unspecified</string>
+
+    <!-- Color resources -->
+    <color name="primaryColor">#1C5153</color>
+    <color name="secondaryColor">#ffffff</color>
+    <color name="primaryDarkColor">#303F9F</color>
+    <color name="accentColor">#FF4081</color>
+
+    <!-- Dimension resources -->
+    <dimen name="padding_standard">16dp</dimen>
+
+    <!-- Style resources -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryDark">@color/primaryColor</item>
+        <item name="colorAccent">@color/primaryColor</item>
+    </style>
+</resources>

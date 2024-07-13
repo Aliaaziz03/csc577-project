@@ -6,6 +6,7 @@ class ParentAgreement extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Parent Agreement'),
+        backgroundColor: Color.fromARGB(255, 28, 81, 83),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

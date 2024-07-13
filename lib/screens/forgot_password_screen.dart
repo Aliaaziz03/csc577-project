@@ -1,35 +1,22 @@
-// login_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class LoginScreen extends StatelessWidget {
+class ForgotPasswordScreen extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
 
-  Future<void> _login(BuildContext context) async {
+  Future<void> _resetPassword(BuildContext context) async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await FirebaseAuth.instance.sendPasswordResetEmail(
         email: emailController.text,
-        password: passwordController.text,
       );
-      // Display success message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("! أهلاً وسهلاً")),
+        SnackBar(content: Text('Password reset email sent')),
       );
-      Navigator.pushNamed(context, '/student_dashboard');
+      Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
-      String errorMessage;
-      if (e.code == 'user-not-found') {
-        errorMessage = 'No user found for that email.';
-      } else if (e.code == 'wrong-password') {
-        errorMessage = 'Wrong password provided.';
-      } else {
-        errorMessage = 'Login failed. Please try again.';
-      }
-      // Display error message
+      print(e.message);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),
+        SnackBar(content: Text('Failed to send password reset email')),
       );
     }
   }
@@ -43,7 +30,7 @@ class LoginScreen extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushNamed(context, '/');
+            Navigator.pop(context);
           },
         ),
       ),
@@ -55,18 +42,7 @@ class LoginScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(left: 20.0),
                 child: Text(
-                  'Login',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 40,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20.0),
-                child: Text(
-                  'Page',
+                  'Forgot Password',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 40,
@@ -112,33 +88,12 @@ class LoginScreen extends StatelessWidget {
                                 fillColor: Colors.grey[300],
                               ),
                             ),
-                            SizedBox(height: 20),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                'Password',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            TextField(
-                              controller: passwordController,
-                              decoration: InputDecoration(
-                                labelText: 'Password',
-                                prefixIcon: Icon(Icons.lock),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                filled: true,
-                                fillColor: Colors.grey[300],
-                              ),
-                              obscureText: true,
-                            ),
                             SizedBox(height: 40),
                             SizedBox(
                               width: double.infinity,
                               height: 50,
                               child: ElevatedButton(
-                                onPressed: () => _login(context),
+                                onPressed: () => _resetPassword(context),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.grey[400],
                                   foregroundColor: Colors.black,
@@ -147,21 +102,12 @@ class LoginScreen extends StatelessWidget {
                                   ),
                                 ),
                                 child: Text(
-                                  'Login',
+                                  'Reset Password',
                                   style: TextStyle(
                                     fontSize: 25,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pushNamed(context, '/forgot_password');
-                              },
-                              child: Text(
-                                'Forgot Password?',
-                                style: TextStyle(color: Colors.black),
                               ),
                             ),
                           ],

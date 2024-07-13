@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "556613213756",
+    "project_id": "akademi-c1fdf",
+    "storage_bucket": "akademi-c1fdf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:556613213756:android:3c3b554f2e27c1e3b62d39",
+        "android_client_info": {
+          "package_name": "com.example.csc577_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsDX3kZUUbaJo4lO8hMaXs78HEIMHXQVU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

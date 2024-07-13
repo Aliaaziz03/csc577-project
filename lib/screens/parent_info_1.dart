@@ -1,6 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:io';
 
-class ParentInfo1 extends StatelessWidget {
+class ParentInfo1 extends StatefulWidget {
+  @override
+  _ParentInfo1State createState() => _ParentInfo1State();
+}
+
+class _ParentInfo1State extends State<ParentInfo1> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController idController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
@@ -12,64 +22,293 @@ class ParentInfo1 extends StatelessWidget {
   final TextEditingController workPhoneController = TextEditingController();
   final TextEditingController workAddressController = TextEditingController();
 
+  bool isSaved = false;
+  String? pdfFileName;
+  String? pdfFileUrl;
+  final String studentEmail = "student@example.com"; // Replace with the actual student email
+
+  @override
+  void initState() {
+    super.initState();
+    _loadParentInfo();
+  }
+
+  Future<void> _loadParentInfo() async {
+    try {
+      DocumentSnapshot document = await FirebaseFirestore.instance
+          .collection('students')
+          .doc(studentEmail)
+          .get();
+
+      if (document.exists) {
+        Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+        setState(() {
+          nameController.text = data['parent_name'] ?? '';
+          idController.text = data['parent_id'] ?? '';
+          phoneController.text = data['parent_phone'] ?? '';
+          relationController.text = data['parent_relation'] ?? '';
+          emailController.text = data['parent_email'] ?? '';
+          occupationController.text = data['parent_occupation'] ?? '';
+          incomeController.text = data['parent_income'] ?? '';
+          dependentsController.text = data['parent_dependents'] ?? '';
+          workPhoneController.text = data['parent_work_phone'] ?? '';
+          workAddressController.text = data['parent_work_address'] ?? '';
+          pdfFileName = data['parent_id_card_name'] ?? '';
+          pdfFileUrl = data['parent_id_card_url'] ?? '';
+        });
+      }
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Failed to load data",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.black.withOpacity(0.5),
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+  }
+
+  Future<void> _pickPDF() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
+
+      if (result != null) {
+        PlatformFile file = result.files.first;
+
+        // Upload file to Firebase Storage
+        UploadTask uploadTask = FirebaseStorage.instance
+            .ref('parent_id_cards/${file.name}')
+            .putFile(File(file.path!));
+
+        TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
+        String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+
+        setState(() {
+          pdfFileName = file.name;
+          pdfFileUrl = downloadUrl;
+        });
+
+        Fluttertoast.showToast(
+          msg: "File uploaded successfully",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.black.withOpacity(0.5),
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Failed to upload file",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.black.withOpacity(0.5),
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+  }
+
+  Future<void> _saveParentInfo() async {
+    if (nameController.text.isEmpty ||
+        idController.text.isEmpty ||
+        phoneController.text.isEmpty ||
+        relationController.text.isEmpty ||
+        emailController.text.isEmpty ||
+        occupationController.text.isEmpty ||
+        incomeController.text.isEmpty ||
+        dependentsController.text.isEmpty) {
+      Fluttertoast.showToast(
+        msg: "Please fill in all required fields",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.black.withOpacity(0.5),
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      return;
+    }
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('students')
+          .doc(studentEmail)
+          .set({
+        'parent_name': nameController.text,
+        'parent_id': idController.text,
+        'parent_phone': phoneController.text,
+        'parent_relation': relationController.text,
+        'parent_email': emailController.text,
+        'parent_occupation': occupationController.text,
+        'parent_income': incomeController.text,
+        'parent_dependents': dependentsController.text,
+        'parent_work_phone': workPhoneController.text,
+        'parent_work_address': workAddressController.text,
+        'parent_id_card_name': pdfFileName,
+        'parent_id_card_url': pdfFileUrl,
+      }, SetOptions(merge: true));
+
+      Fluttertoast.showToast(
+        msg: "Data saved successfully",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.black.withOpacity(0.5),
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      setState(() {
+        isSaved = true;
+      });
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Failed to save data",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.black.withOpacity(0.5),
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Parent/Guardian 1 Information'),
+        backgroundColor: Color(0xFF1C5153), // Custom app bar color
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextField(
+              Text(
+                'Father / Guardian 1',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 16),
+              CustomTextField(
                 controller: nameController,
-                decoration: InputDecoration(labelText: 'Full Name'),
+                labelText: 'Full Name *',
               ),
-              TextField(
+              CustomTextField(
                 controller: idController,
-                decoration: InputDecoration(labelText: 'Identification Number'),
+                labelText: 'Identification Number *',
               ),
-              TextField(
+              CustomTextField(
                 controller: phoneController,
-                decoration: InputDecoration(labelText: 'Phone Number'),
+                labelText: 'Phone Number *',
               ),
-              TextField(
+              CustomTextField(
                 controller: relationController,
-                decoration: InputDecoration(labelText: 'Relationship to Student'),
+                labelText: 'Relationship to Student *',
               ),
-              TextField(
+              CustomTextField(
                 controller: emailController,
-                decoration: InputDecoration(labelText: 'Email Address'),
+                labelText: 'Email Address *',
               ),
-              TextField(
+              CustomTextField(
                 controller: occupationController,
-                decoration: InputDecoration(labelText: 'Occupation'),
+                labelText: 'Occupation *',
               ),
-              TextField(
+              CustomTextField(
                 controller: incomeController,
-                decoration: InputDecoration(labelText: 'Monthly Income'),
+                labelText: 'Monthly Income *',
               ),
-              TextField(
+              CustomTextField(
                 controller: dependentsController,
-                decoration: InputDecoration(labelText: 'Number of Dependents'),
+                labelText: 'Number of Dependents *',
               ),
-              TextField(
+              CustomTextField(
                 controller: workPhoneController,
-                decoration: InputDecoration(labelText: 'Work Phone'),
+                labelText: 'Work Phone',
               ),
-              TextField(
+              CustomTextField(
                 controller: workAddressController,
-                decoration: InputDecoration(labelText: 'Work Address'),
+                labelText: 'Work Address',
               ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/parent_info_2');
-                },
-                child: Text('Next'),
+              SizedBox(height: 16),
+              Center(
+                child: Column(
+                  children: [
+                    ElevatedButton(
+                      onPressed: _saveParentInfo,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFD3E3D1), // Custom button color
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        minimumSize: Size(150, 50),
+                      ),
+                      child: Text('Save'),
+                    ),
+                    SizedBox(height: 8),
+                    ElevatedButton(
+                      onPressed: isSaved
+                          ? () {
+                              Navigator.pushNamed(context, '/parent_info_2');
+                            }
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isSaved
+                            ? Color(0xFF1C5153)
+                            : Colors.grey, // Custom button color
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        minimumSize: Size(150, 50),
+                      ),
+                      child: Text('Next'),
+                    ),
+                    SizedBox(height: 8),
+                    ElevatedButton(
+                      onPressed: _pickPDF,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF1C5153), // Custom button color
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        minimumSize: Size(150, 50),
+                      ),
+                      child: Text('Upload PDF'),
+                    ),
+                    if (pdfFileName != null) Text('Uploaded: $pdfFileName'),
+                  ],
+                ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CustomTextField extends StatelessWidget {
+  final TextEditingController controller;
+  final String labelText;
+
+  CustomTextField({required this.controller, required this.labelText});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: labelText,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
           ),
         ),
       ),
