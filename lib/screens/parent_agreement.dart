@@ -47,26 +47,28 @@ class _ParentAgreementState extends State<ParentAgreement> {
         isSubmitting = false;
       });
 
-      if (isSubmitting) {
-        Fluttertoast.showToast(
-          msg: "Successfully submitted",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-        );
+      Fluttertoast.showToast(
+        msg: "Successfully submitted",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+      );
 
-        // Navigate to dashboard or student list
-        Navigator.pushNamed(context, '/student_list');
-      } else {
-        Fluttertoast.showToast(
-          msg: "Failed to submit",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-        );
-      }
+      // Navigate to dashboard or student list
+      Navigator.pushReplacementNamed(context, '/student_dashboard');
+    }).catchError((error) {
+      setState(() {
+        isSubmitting = false;
+      });
+
+      Fluttertoast.showToast(
+        msg: "Failed to submit",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
     });
   }
 
@@ -75,7 +77,7 @@ class _ParentAgreementState extends State<ParentAgreement> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Parent Agreement'),
-        backgroundColor: Color.fromARGB(255, 28, 81, 83),
+        backgroundColor: Color(0xFF1C5153), // Custom app bar color
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -124,6 +126,14 @@ class _ParentAgreementState extends State<ParentAgreement> {
             Center(
               child: ElevatedButton(
                 onPressed: isSubmitting ? null : _submitAgreement,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isSubmitting ? Colors.grey : Color(0xFFD3E3D1), // Custom button color
+                  foregroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  minimumSize: Size(150, 50),
+                ),
                 child: isSubmitting
                     ? CircularProgressIndicator()
                     : Text('Submit'),

@@ -1,4 +1,5 @@
-import 'package:csc577_project/screens/student_dashboard.dart';
+import 'package:csc577_project/screens/parent_agreement.dart';
+import 'package:csc577_project/screens/parent_info_1.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -51,7 +52,8 @@ class _StudentInformationState extends State<StudentInformation> {
           .get();
 
       if (studentSnapshot.exists) {
-        Map<String, dynamic> data = studentSnapshot.data() as Map<String, dynamic>;
+        Map<String, dynamic> data =
+            studentSnapshot.data() as Map<String, dynamic>;
         fullNameController.text = data['full_name'];
         idController.text = data['id'];
         addressController.text = data['address'];
@@ -76,7 +78,8 @@ class _StudentInformationState extends State<StudentInformation> {
           .get();
 
       if (parentSnapshot.exists) {
-        Map<String, dynamic> data = parentSnapshot.data() as Map<String, dynamic>;
+        Map<String, dynamic> data =
+            parentSnapshot.data() as Map<String, dynamic>;
         // Load parent information into your controllers if needed
       }
     } catch (e) {
@@ -89,6 +92,26 @@ class _StudentInformationState extends State<StudentInformation> {
         fontSize: 16.0,
       );
     }
+  }
+
+  bool validateFields() {
+    return fullNameController.text.isNotEmpty &&
+        idController.text.isNotEmpty &&
+        addressController.text.isNotEmpty &&
+        cityController.text.isNotEmpty &&
+        postcodeController.text.isNotEmpty &&
+        state != null &&
+        state != 'Please choose' &&
+        studentPhoneController.text.isNotEmpty &&
+        guardianPhoneController.text.isNotEmpty &&
+        maritalStatus != null &&
+        maritalStatus != 'Please choose' &&
+        numberOfSiblings != null &&
+        numberOfSiblings != 'Please choose' &&
+        orderOfSiblings != null &&
+        orderOfSiblings != 'Please choose' &&
+        disabilities != null &&
+        disabilities != 'Please choose';
   }
 
   @override
@@ -108,14 +131,17 @@ class _StudentInformationState extends State<StudentInformation> {
                 controller: fullNameController,
                 labelText: 'Full Name *',
               ),
+              SizedBox(height: 10),
               CustomTextField(
                 controller: idController,
                 labelText: 'Identification Number *',
               ),
+              SizedBox(height: 10),
               CustomTextField(
                 controller: addressController,
                 labelText: 'Home Address *',
               ),
+              SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
@@ -166,14 +192,17 @@ class _StudentInformationState extends State<StudentInformation> {
                   ),
                 ],
               ),
+              SizedBox(height: 10),
               CustomTextField(
                 controller: studentPhoneController,
                 labelText: 'Phone Number (Student) *',
               ),
+              SizedBox(height: 10),
               CustomTextField(
                 controller: guardianPhoneController,
                 labelText: 'Phone Number (Parent/Guardian) *',
               ),
+              SizedBox(height: 10),
               DropdownField(
                 labelText: 'Birth Place',
                 items: [
@@ -201,6 +230,7 @@ class _StudentInformationState extends State<StudentInformation> {
                   });
                 },
               ),
+              SizedBox(height: 10),
               DropdownField(
                 labelText: 'Marital Status *',
                 items: ['Please choose', 'Single', 'Married'],
@@ -211,6 +241,7 @@ class _StudentInformationState extends State<StudentInformation> {
                   });
                 },
               ),
+              SizedBox(height: 10),
               DropdownField(
                 labelText: 'Number of Siblings *',
                 items: [
@@ -233,6 +264,7 @@ class _StudentInformationState extends State<StudentInformation> {
                   });
                 },
               ),
+              SizedBox(height: 10),
               DropdownField(
                 labelText: 'Order of Siblings *',
                 items: [
@@ -255,6 +287,7 @@ class _StudentInformationState extends State<StudentInformation> {
                   });
                 },
               ),
+              SizedBox(height: 10),
               DropdownField(
                 labelText: 'Are you a person with disabilities? *',
                 items: ['Please choose', 'Yes', 'No'],
@@ -265,26 +298,11 @@ class _StudentInformationState extends State<StudentInformation> {
                   });
                 },
               ),
+              SizedBox(height: 20),
               Center(
                 child: ElevatedButton(
                   onPressed: () async {
-                    if (fullNameController.text.isEmpty ||
-                        idController.text.isEmpty ||
-                        addressController.text.isEmpty ||
-                        cityController.text.isEmpty ||
-                        postcodeController.text.isEmpty ||
-                        state == null ||
-                        state == 'Please choose' ||
-                        studentPhoneController.text.isEmpty ||
-                        guardianPhoneController.text.isEmpty ||
-                        maritalStatus == null ||
-                        maritalStatus == 'Please choose' ||
-                        numberOfSiblings == null ||
-                        numberOfSiblings == 'Please choose' ||
-                        orderOfSiblings == null ||
-                        orderOfSiblings == 'Please choose' ||
-                        disabilities == null ||
-                        disabilities == 'Please choose') {
+                    if (!validateFields()) {
                       Fluttertoast.showToast(
                         msg: "Please fill in all required fields",
                         toastLength: Toast.LENGTH_SHORT,
@@ -294,55 +312,16 @@ class _StudentInformationState extends State<StudentInformation> {
                         fontSize: 16.0,
                       );
                     } else {
-                      try {
-                        if (currentUser != null) {
-                          await FirebaseFirestore.instance
-                              .collection('students')
-                              .doc(currentUser!.email)
-                              .set({
-                            'full_name': fullNameController.text,
-                            'id': idController.text,
-                            'email': currentUser!.email,
-                            'address': addressController.text,
-                            'city': cityController.text,
-                            'postcode': postcodeController.text,
-                            'state': state,
-                            'student_phone': studentPhoneController.text,
-                            'guardian_phone': guardianPhoneController.text,
-                            'birth_place': birthPlace,
-                            'marital_status': maritalStatus,
-                            'number_of_siblings': numberOfSiblings,
-                            'order_of_siblings': orderOfSiblings,
-                            'disabilities': disabilities,
-                          });
-
-                          await saveParentInfo(currentUser!.email!);
-
-                          Fluttertoast.showToast(
-                            msg: "Data saved successfully",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.BOTTOM,
-                            backgroundColor: Colors.black.withOpacity(0.5),
-                            textColor: Colors.white,
-                            fontSize: 16.0,
-                          );
-
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>  StudentDashboard()),
-                          );
-                        }
-                      } catch (e) {
-                        Fluttertoast.showToast(
-                          msg: "Failed to save data",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          backgroundColor: Colors.black.withOpacity(0.5),
-                          textColor: Colors.white,
-                          fontSize: 16.0,
-                        );
-                      }
+                      // Check if all required information is saved
+                      bool allInformationSaved = await saveStudentInfo();
+                      
+                      // Navigate to ParentAgreement with allInformationSaved status
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ParentInfo1()
+                        ),
+                      );
                     }
                   },
                   child: Text('Save'),
@@ -361,8 +340,43 @@ class _StudentInformationState extends State<StudentInformation> {
     );
   }
 
-  Future<void> saveParentInfo(String email) async {
-    // Add your code to save parent information here
+  Future<bool> saveStudentInfo() async {
+    try {
+      if (currentUser != null) {
+        await FirebaseFirestore.instance
+            .collection('students')
+            .doc(currentUser!.email)
+            .set({
+          'full_name': fullNameController.text,
+          'id': idController.text,
+          'address': addressController.text,
+          'city': cityController.text,
+          'postcode': postcodeController.text,
+          'state': state,
+          'student_phone': studentPhoneController.text,
+          'guardian_phone': guardianPhoneController.text,
+          'birth_place': birthPlace,
+          'marital_status': maritalStatus,
+          'number_of_siblings': numberOfSiblings,
+          'order_of_siblings': orderOfSiblings,
+          'disabilities': disabilities,
+        });
+
+        // Assuming parent info is also saved here
+
+        return true; // Return true if all information is successfully saved
+      }
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Failed to save data",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.black.withOpacity(0.5),
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+    return false; // Return false if saving fails
   }
 }
 
@@ -380,7 +394,7 @@ class CustomTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextField(
+      child: TextFormField(
         controller: controller,
         decoration: InputDecoration(
           labelText: labelText,
@@ -397,7 +411,7 @@ class DropdownField extends StatelessWidget {
   final String labelText;
   final List<String> items;
   final String? value;
-  final Function(String?) onChanged;
+  final ValueChanged<String?> onChanged;
 
   const DropdownField({
     Key? key,
@@ -411,26 +425,21 @@ class DropdownField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: InputDecorator(
+      child: DropdownButtonFormField<String>(
         decoration: InputDecoration(
           labelText: labelText,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
           ),
         ),
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton<String>(
-            value: value,
-            isDense: true,
-            onChanged: onChanged,
-            items: items.map((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-          ),
-        ),
+        items: items.map((String item) {
+          return DropdownMenuItem<String>(
+            value: item,
+            child: Text(item),
+          );
+        }).toList(),
+        value: value,
+        onChanged: onChanged,
       ),
     );
   }

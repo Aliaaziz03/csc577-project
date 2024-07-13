@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:csc577_project/screens/parent_agreement.dart';
 
 class ParentInfo2 extends StatefulWidget {
   @override
@@ -88,7 +89,7 @@ class _ParentInfo2State extends State<ParentInfo2> {
     }
   }
 
-  Future<void> _saveParentInfo2(BuildContext context) async {
+  Future<bool> _saveParentInfo2(BuildContext context) async {
     if (nameController2.text.isEmpty ||
         idController2.text.isEmpty ||
         phoneController2.text.isEmpty ||
@@ -104,7 +105,7 @@ class _ParentInfo2State extends State<ParentInfo2> {
         backgroundColor: Colors.red,
         textColor: Colors.white,
       );
-      return;
+      return false;
     }
 
     final parentInfo2 = {
@@ -139,7 +140,7 @@ class _ParentInfo2State extends State<ParentInfo2> {
       );
 
       // Navigate after showing success toast
-      Navigator.pushReplacementNamed(context, '/student_dashboard');
+      return true;
     } catch (e) {
       Fluttertoast.showToast(
         msg: "Failed to save parent information",
@@ -148,6 +149,7 @@ class _ParentInfo2State extends State<ParentInfo2> {
         backgroundColor: Colors.red,
         textColor: Colors.white,
       );
+      return false;
     } finally {
       setState(() {
         _isSubmitting = false;
@@ -259,7 +261,20 @@ class _ParentInfo2State extends State<ParentInfo2> {
           SizedBox(height: 16),
           Center(
             child: ElevatedButton(
-              onPressed: () => _saveParentInfo2(context),
+              onPressed: () async {
+                bool saved = await _saveParentInfo2(context);
+                if (saved) {
+                 Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ParentAgreement(
+                            allInformationSaved: true
+                            ,
+                          ),
+                        ),
+                      );
+                }
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFFD3E3D1), // Custom button color
                 foregroundColor: Colors.black,

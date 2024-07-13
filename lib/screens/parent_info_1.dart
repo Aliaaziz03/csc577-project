@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
+import 'package:csc577_project/screens/parent_agreement.dart';
 
 class ParentInfo1 extends StatefulWidget {
   @override
@@ -110,7 +111,7 @@ class _ParentInfo1State extends State<ParentInfo1> {
     }
   }
 
-  Future<void> _saveParentInfo() async {
+  Future<bool> _saveParentInfo() async {
     if (nameController.text.isEmpty ||
         idController.text.isEmpty ||
         phoneController.text.isEmpty ||
@@ -127,7 +128,7 @@ class _ParentInfo1State extends State<ParentInfo1> {
         textColor: Colors.white,
         fontSize: 16.0,
       );
-      return;
+      return false; // Return false if required fields are not filled
     }
 
     try {
@@ -160,6 +161,7 @@ class _ParentInfo1State extends State<ParentInfo1> {
       setState(() {
         isSaved = true;
       });
+      return true; // Return true if all data is saved successfully
     } catch (e) {
       Fluttertoast.showToast(
         msg: "Failed to save data",
@@ -169,6 +171,7 @@ class _ParentInfo1State extends State<ParentInfo1> {
         textColor: Colors.white,
         fontSize: 16.0,
       );
+      return false; // Return false if saving fails
     }
   }
 
@@ -238,7 +241,10 @@ class _ParentInfo1State extends State<ParentInfo1> {
                 child: Column(
                   children: [
                     ElevatedButton(
-                      onPressed: _saveParentInfo,
+                      onPressed: () async {
+                        bool saved = await _saveParentInfo();
+                        
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFFD3E3D1), // Custom button color
                         foregroundColor: Colors.black,

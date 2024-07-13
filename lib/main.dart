@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
         '/student_info': (context) => StudentInformation(),
         '/parent_info_1': (context) => ParentInfo1(),
         '/parent_info_2': (context) => ParentInfo2(),
-        '/parent_agreement': (context) => ParentAgreement(),
+        '/parent_agreement': (context) => ParentAgreement(allInformationSaved: true),
         '/forgot_password': (context) => ForgotPasswordScreen(),
       },
     );
