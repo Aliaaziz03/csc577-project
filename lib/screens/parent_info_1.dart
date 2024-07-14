@@ -224,7 +224,7 @@ class _ParentInfo1State extends State<ParentInfo1> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Parent/Guardian 1 Information'),
+        title: Text('Parent/Guardian 1 Information',style: TextStyle(color: Colors.white),),
         backgroundColor: Color(0xFF1C5153), // Custom app bar color
       ),
       body: Padding(

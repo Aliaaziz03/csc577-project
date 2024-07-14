@@ -1,17 +1,13 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:csc577_project/screens/parent_agreement.dart';
 
-
 class ParentInfo2 extends StatefulWidget {
   @override
   _ParentInfo2State createState() => _ParentInfo2State();
 }
-
 
 class _ParentInfo2State extends State<ParentInfo2> {
   final TextEditingController nameController2 = TextEditingController();
@@ -23,11 +19,9 @@ class _ParentInfo2State extends State<ParentInfo2> {
   final TextEditingController workPhoneController2 = TextEditingController();
   final TextEditingController workAddressController2 = TextEditingController();
 
-
   bool _isSubmitting = false;
   String? selectedIncome2;
   String? selectedDependents2;
-
 
   final List<String> incomeOptions = [
     'Below RM1,000',
@@ -37,10 +31,8 @@ class _ParentInfo2State extends State<ParentInfo2> {
     'Above RM7,000',
   ];
 
-
   final List<String> dependentsOptions =
       List.generate(10, (index) => index.toString()) + ['Others'];
-
 
   @override
   void initState() {
@@ -49,34 +41,33 @@ class _ParentInfo2State extends State<ParentInfo2> {
       if (email != null) {
         emailController2.text = email;
         fetchParentInfo2(); // Fetch data immediately when email is retrieved
+      } else {
+        print("No email found in SharedPreferences");
       }
     });
   }
 
-
   @override
   void dispose() {
-    emailController2.dispose();
+    // Dispose controllers
     nameController2.dispose();
     idController2.dispose();
     phoneController2.dispose();
     relationController2.dispose();
+    emailController2.dispose();
     occupationController2.dispose();
     workPhoneController2.dispose();
     workAddressController2.dispose();
     super.dispose();
   }
 
-
   Future<String?> getEmail() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('user_email');
   }
 
-
   Future<void> fetchParentInfo2() async {
     if (emailController2.text.isEmpty) return;
-
 
     try {
       DocumentSnapshot document = await FirebaseFirestore.instance
@@ -84,10 +75,8 @@ class _ParentInfo2State extends State<ParentInfo2> {
           .doc(emailController2.text)
           .get();
 
-
       if (document.exists) {
-        Map<String, dynamic> data =
-            document.data() as Map<String, dynamic>; // Cast to Map<String, dynamic>
+        Map<String, dynamic> data = document.data() as Map<String, dynamic>;
         setState(() {
           nameController2.text = data['parent_name2'] ?? '';
           idController2.text = data['parent_id2'] ?? '';
@@ -116,7 +105,6 @@ class _ParentInfo2State extends State<ParentInfo2> {
     }
   }
 
-
   Future<bool> _saveParentInfo2(BuildContext context) async {
     if (nameController2.text.isEmpty ||
         idController2.text.isEmpty ||
@@ -136,7 +124,6 @@ class _ParentInfo2State extends State<ParentInfo2> {
       return false;
     }
 
-
     final parentInfo2 = {
       'parent_name2': nameController2.text,
       'parent_id2': idController2.text,
@@ -150,18 +137,15 @@ class _ParentInfo2State extends State<ParentInfo2> {
       'parent_work_address2': workAddressController2.text,
     };
 
-
     setState(() {
       _isSubmitting = true;
     });
-
 
     try {
       await FirebaseFirestore.instance
           .collection('parents')
           .doc(emailController2.text)
           .set(parentInfo2, SetOptions(merge: true));
-
 
       Fluttertoast.showToast(
         msg: "Parent information saved successfully",
@@ -171,7 +155,6 @@ class _ParentInfo2State extends State<ParentInfo2> {
         textColor: Colors.white,
       );
       print("Data saved successfully: $parentInfo2");
-
 
       return true;
     } catch (e) {
@@ -191,19 +174,22 @@ class _ParentInfo2State extends State<ParentInfo2> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Mother/Guardian 2 Information',style: TextStyle(color: Colors.white),),
+        title: Text(
+          'Mother/Guardian 2 Information',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Color(0xFF1C5153), // Custom app bar color
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 20.0, top: 20.0, bottom: 20.0),
+            padding:
+                const EdgeInsets.only(left: 20.0, top: 20.0, bottom: 20.0),
             child: Text(
               'Parent / Guardian 2',
               style: TextStyle(
@@ -299,15 +285,14 @@ class _ParentInfo2State extends State<ParentInfo2> {
               onPressed: () async {
                 bool saved = await _saveParentInfo2(context);
                 if (saved) {
-                 Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ParentAgreement(
-                            allInformationSaved: true
-                            ,
-                          ),
-                        ),
-                      );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ParentAgreement(
+                        allInformationSaved: true,
+                      ),
+                    ),
+                  );
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -329,19 +314,16 @@ class _ParentInfo2State extends State<ParentInfo2> {
   }
 }
 
-
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final String labelText;
   final TextInputType? keyboardType;
-
 
   CustomTextField({
     required this.controller,
     required this.labelText,
     this.keyboardType,
   });
-
 
   @override
   Widget build(BuildContext context) {
@@ -360,9 +342,6 @@ class CustomTextField extends StatelessWidget {
     );
   }
 }
-
-
-
 
 
 

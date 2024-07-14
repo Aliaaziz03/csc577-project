@@ -123,12 +123,12 @@ class StudentDashboard extends StatelessWidget {
             ],
           ),
           Positioned(
-            top: 150, // Adjust this value to position the image below the containers
+            top: 10, // Adjust this value to position the image below the containers
             right: 16, // Adjust this value to position the image near the right side
             child: Image.asset(
               'star.png', 
-              width: 200, // Adjust the width as needed
-              height: 200, // Adjust the height as needed
+              width: 250, // Adjust the width as needed
+              height: 250, // Adjust the height as needed
             ),
           ),
           Positioned(
@@ -136,8 +136,8 @@ class StudentDashboard extends StatelessWidget {
             left: 16, // Adjust this value to position the image near the left side
             child: Image.asset(
               'people.png', 
-              width: 200, // Adjust the width as needed
-              height: 200, // Adjust the height as needed
+              width: 300, // Adjust the width as needed
+              height: 300, // Adjust the height as needed
             ),
           ),
         ],

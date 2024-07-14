@@ -13,7 +13,7 @@ class TeacherDashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Teacher Dashboard'),
+        title: Text('Teacher Dashboard',style: TextStyle(color: Colors.white),),
         backgroundColor:  Color(0xFF1C5153),
       ),
       body: Padding(
