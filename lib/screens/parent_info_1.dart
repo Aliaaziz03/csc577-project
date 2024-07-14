@@ -5,6 +5,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 
+import 'package:url_launcher/url_launcher.dart';
+
 class ParentInfo1 extends StatefulWidget {
   @override
   _ParentInfo1State createState() => _ParentInfo1State();
@@ -27,7 +29,7 @@ class _ParentInfo1State extends State<ParentInfo1> {
       "student@example.com"; // Replace with the actual student email
 
   String? selectedIncome;// = 'Below RM1,000';
-  String? selectedDependents;// = '0';
+  String? selectedDependents = '0';
 
   final List<String> incomeOptions = [
     'Below RM1,000',
@@ -83,17 +85,20 @@ class _ParentInfo1State extends State<ParentInfo1> {
   }
 
   Future<void> _pickPDF() async {
-    try {
-      FilePickerResult? result = await FilePicker.platform
-          .pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
+  try {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom, 
+      allowedExtensions: ['pdf']
+    );
 
-      if (result != null) {
-        PlatformFile file = result.files.first;
+    if (result != null) {
+      PlatformFile file = result.files.first;
 
-        // Upload file to Firebase Storage
+      if (file.bytes != null) {
+        // Upload file to Firebase Storage using bytes
         UploadTask uploadTask = FirebaseStorage.instance
             .ref('parent_id_cards/${file.name}')
-            .putFile(File(file.path!));
+            .putData(file.bytes!);
 
         TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
         String downloadUrl = await taskSnapshot.ref.getDownloadURL();
@@ -111,18 +116,30 @@ class _ParentInfo1State extends State<ParentInfo1> {
           textColor: Colors.white,
           fontSize: 16.0,
         );
+      } else {
+        Fluttertoast.showToast(
+          msg: "Failed to read file bytes",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.black.withOpacity(0.5),
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
       }
-    } catch (e) {
-      Fluttertoast.showToast(
-        msg: "Failed to upload file",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.black.withOpacity(0.5),
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
     }
+  } catch (e) {
+    Fluttertoast.showToast(
+      msg: "Failed to upload file",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: Colors.black.withOpacity(0.5),
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+    print(e); // Print the error message for debugging
   }
+}
+
 
   Future<bool> _saveParentInfo() async {
     if (nameController.text.isEmpty ||
@@ -185,12 +202,29 @@ class _ParentInfo1State extends State<ParentInfo1> {
       return false; // Return false if saving fails
     }
   }
+  Future<void> _viewPDF() async {
+    if (pdfFileUrl != null) {
+      if (await canLaunch(pdfFileUrl!)) {
+        await launch(pdfFileUrl!);
+      } else {
+        Fluttertoast.showToast(
+          msg: "Could not launch PDF",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.black.withOpacity(0.5),
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Parent/Guardian 1 Information',style: TextStyle(color: Colors.white),),
+        title: Text('Parent/Guardian 1 Information'),
         backgroundColor: Color(0xFF1C5153), // Custom app bar color
       ),
       body: Padding(
@@ -337,7 +371,24 @@ class _ParentInfo1State extends State<ParentInfo1> {
                       ),
                       child: Text('Upload ID Card'),
                     ),
-                    if (pdfFileName != null) Text('Uploaded: $pdfFileName'),
+                  if (pdfFileName != null) 
+                      Column(
+                        children: [
+                          Text('Uploaded: $pdfFileName'),
+                          ElevatedButton(
+                            onPressed: _viewPDF,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF1C5153),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              minimumSize: Size(150, 50),
+                            ),
+                            child: Text('View PDF'),
+                          ),
+                        ],
+                      ),
                   ],
                 ),
               ),
@@ -348,6 +399,7 @@ class _ParentInfo1State extends State<ParentInfo1> {
     );
   }
 }
+
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
