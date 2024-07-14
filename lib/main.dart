@@ -18,27 +18,29 @@ void main() async {
     options: FirebaseOptions(
       apiKey: "AIzaSyDsDX3kZUUbaJo4lO8hMaXs78HEIMHXQVU",
       appId: "com.example.csc577_project",
-      messagingSenderId: "556613213756", 
+      messagingSenderId: "556613213756",
       projectId: "akademi-c1fdf",
-      storageBucket: "akademi-c1fdf.appspot.com" )
+      storageBucket: "akademi-c1fdf.appspot.com"
+    )
   );
 
 
   runApp(MyApp());
 }
 
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+       debugShowCheckedModeBanner: false,
       title: 'School App',
       theme: ThemeData(
         primarySwatch: Colors.green,
-         primaryColor: Color(0xFF1C5153), // Use your primaryColor
+        primaryColor: Color(0xFF1C5153), // Use your primaryColor
         primaryColorDark: Color(0xFF303F9F), // Use your primaryDarkColor
         hintColor: Color(0xFFFF4081), // Use your accentColor
       ),
-      debugShowCheckedModeBanner: false, // Disable the debug banner
       initialRoute: '/',
       routes: {
         '/': (context) => OnboardingScreen(),
@@ -55,3 +57,5 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+

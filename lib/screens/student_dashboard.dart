@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+
 class StudentDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -46,7 +47,7 @@ class StudentDashboard extends StatelessWidget {
                               Navigator.pushNamed(context, '/student_info');
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color.fromARGB(255, 157, 216, 159), // Button background color
+                              backgroundColor: Color.fromARGB(255, 147,161,178), // Button background color
                               foregroundColor: Colors.white, // Button text color
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30), // Set border radius to 30
@@ -64,7 +65,7 @@ class StudentDashboard extends StatelessWidget {
                               Navigator.pushNamed(context, '/parent_info_1');
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color.fromARGB(255, 157, 216, 159),  // Button background color
+                              backgroundColor: Color.fromARGB(255, 147,161,178),  // Button background color
                               foregroundColor: Colors.white, // Button text color
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30), // Set border radius to 30
@@ -87,7 +88,7 @@ class StudentDashboard extends StatelessWidget {
                               Navigator.pushNamed(context, '/parent_agreement');
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color.fromARGB(255, 157, 216, 159),  // Button background color
+                              backgroundColor: Color.fromARGB(255, 147,161,178),  // Button background color
                               foregroundColor: Colors.white, // Button text color
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30), // Set border radius to 30
@@ -105,13 +106,13 @@ class StudentDashboard extends StatelessWidget {
                               Navigator.pushNamed(context, '/teacher_dashboard');
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color.fromARGB(255, 157, 216, 159),  // Button background color
+                              backgroundColor: Color.fromARGB(255, 147,161,178),  // Button background color
                               foregroundColor: Colors.white, // Button text color
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30), // Set border radius to 30
                               ),
                             ),
-                            child: Text('List of Registered Students', textAlign: TextAlign.center),
+                            child: Text('Teacher Dashboard', textAlign: TextAlign.center),
                           ),
                         ),
                       ],
@@ -123,21 +124,21 @@ class StudentDashboard extends StatelessWidget {
             ],
           ),
           Positioned(
-            top: 10, // Adjust this value to position the image below the containers
+            top: 60, // Adjust this value to position the image below the containers
             right: 16, // Adjust this value to position the image near the right side
             child: Image.asset(
-              'star.png', 
-              width: 250, // Adjust the width as needed
-              height: 250, // Adjust the height as needed
+              'assets/star.png',
+              width: 100, // Adjust the width as needed
+              height: 100, // Adjust the height as needed
             ),
           ),
           Positioned(
-            bottom: 80, // Adjust this value to position the image above the containers
+            bottom: 16, // Adjust this value to position the image above the containers
             left: 16, // Adjust this value to position the image near the left side
             child: Image.asset(
-              'people.png', 
-              width: 300, // Adjust the width as needed
-              height: 300, // Adjust the height as needed
+              'assets/people.png',
+              width: 150, // Adjust the width as needed
+              height: 150, // Adjust the height as needed
             ),
           ),
         ],
@@ -145,3 +146,5 @@ class StudentDashboard extends StatelessWidget {
     );
   }
 }
+
+
