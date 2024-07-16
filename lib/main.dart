@@ -1,3 +1,5 @@
+import 'package:csc577_project/screens/LoginStudent.dart';
+import 'package:csc577_project/screens/LoginTeacher.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'screens/onboarding_screen.dart';
@@ -10,6 +12,7 @@ import 'screens/parent_info_1.dart';
 import 'screens/parent_info_2.dart';
 import 'screens/parent_agreement.dart';
 import 'screens/forgot_password_screen.dart';
+import 'package:csc577_project/screens/staffDashboard.dart';
 
 
 void main() async {
@@ -45,9 +48,12 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => OnboardingScreen(),
         '/login': (context) => LoginScreen(),
+        '/login_teacher': (context) => LoginTeacher(),
+        '/login_student': (context) => LoginStudent(),
         '/register': (context) => RegisterScreen(),
         '/student_dashboard': (context) => StudentDashboard(),
         '/teacher_dashboard': (context) => TeacherDashboard(),
+         '/staff_dashboard': (context) => StaffDashboard(),
         '/student_info': (context) => StudentInformation(),
         '/parent_info_1': (context) => ParentInfo1(),
         '/parent_info_2': (context) => ParentInfo2(),
