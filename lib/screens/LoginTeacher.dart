@@ -8,29 +8,36 @@ class LoginTeacher extends StatelessWidget {
 
   Future<void> _login(BuildContext context) async {
     try {
-      // Fetch the email based on the teacher ID
-      String teacherID = idController.text;
-      QuerySnapshot snapshot = await FirebaseFirestore.instance
+      // Get the teacher ID and password from the text controllers
+      String teacherID = idController.text.trim();
+      String enteredPassword = passwordController.text;
+
+      // Check if the document with the given teacher ID exists in Firestore
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
           .collection('teachers')
-          .where('teacherID', isEqualTo: teacherID)
+          .doc(teacherID)
           .get();
 
-      if (snapshot.docs.isEmpty) {
+      if (!snapshot.exists) {
+        // Show error message if the teacher ID is not found
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('No user found for that Teacher ID.')),
         );
         return;
       }
 
-      String email = snapshot.docs.first['email'];
+      // Fetch the stored password from the Firestore document
+      String storedPassword = snapshot['password'];
 
-      // Authenticate with email and password
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: passwordController.text,
-      );
+      // Check if the entered password matches the stored password
+      if (enteredPassword != storedPassword) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Wrong password provided.')),
+        );
+        return;
+      }
 
-      // Display success message
+      // Display success message and navigate to the dashboard
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("! أهلاً وسهلاً")),
       );

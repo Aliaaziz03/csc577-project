@@ -26,14 +26,13 @@ class _RegisterTeacherState extends State<RegisterTeacher> {
       });
 
       try {
-        // Check if the teacher ID exists in Firestore
-        String teacherID = idController.text;
-        QuerySnapshot snapshot = await _firestore
-            .collection('teachers')
-            .where('teacherID', isEqualTo: teacherID)
-            .get();
+        // Get the teacher ID from the text controller
+        String teacherID = idController.text.trim();
 
-        if (snapshot.docs.isEmpty) {
+        // Check if the document with the given teacher ID exists in Firestore
+        DocumentSnapshot snapshot = await _firestore.collection('teachers').doc(teacherID).get();
+
+        if (!snapshot.exists) {
           // Show error message if the teacher ID is not found
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Teacher ID does not exist. Please contact admin.')),
@@ -51,9 +50,9 @@ class _RegisterTeacherState extends State<RegisterTeacher> {
         );
 
         // Add user information to Firestore
-        await _firestore.collection('teachers').doc(userCredential.user?.uid).set({
-          'teacherID': teacherID,
+        await _firestore.collection('teachers').doc(teacherID).update({
           'email': emailController.text,
+          'password': passwordController.text,
           'created_at': FieldValue.serverTimestamp(),
         });
 
@@ -61,7 +60,7 @@ class _RegisterTeacherState extends State<RegisterTeacher> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Registration successful')),
         );
-        Navigator.pushNamed(context, '/teacher_dashboard');
+        Navigator.pushNamed(context, '/login');
       } on FirebaseAuthException catch (e) {
         String errorMessage;
         if (e.code == 'email-already-in-use') {
