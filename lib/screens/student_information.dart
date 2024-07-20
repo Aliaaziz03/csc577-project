@@ -1,14 +1,15 @@
-import 'package:csc577_project/screens/parent_agreement.dart';
-import 'package:csc577_project/screens/parent_info_1.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:csc577_project/screens/parent_info_1.dart';
+
 
 class StudentInformation extends StatefulWidget {
   @override
   _StudentInformationState createState() => _StudentInformationState();
 }
+
 
 class _StudentInformationState extends State<StudentInformation> {
   final TextEditingController fullNameController = TextEditingController();
@@ -19,6 +20,7 @@ class _StudentInformationState extends State<StudentInformation> {
   final TextEditingController studentPhoneController = TextEditingController();
   final TextEditingController guardianPhoneController = TextEditingController();
 
+
   String? state;
   String? birthPlace;
   String? maritalStatus;
@@ -26,13 +28,17 @@ class _StudentInformationState extends State<StudentInformation> {
   String? orderOfSiblings;
   String? disabilities;
 
+
   User? currentUser;
+  bool isEditMode = false;
+
 
   @override
   void initState() {
     super.initState();
     getCurrentUser();
   }
+
 
   void getCurrentUser() async {
     User? user = FirebaseAuth.instance.currentUser;
@@ -44,12 +50,14 @@ class _StudentInformationState extends State<StudentInformation> {
     }
   }
 
+
   Future<void> loadStudentInformation() async {
     try {
       DocumentSnapshot studentSnapshot = await FirebaseFirestore.instance
           .collection('students')
           .doc(currentUser!.email)
           .get();
+
 
       if (studentSnapshot.exists) {
         Map<String, dynamic> data =
@@ -70,12 +78,14 @@ class _StudentInformationState extends State<StudentInformation> {
         setState(() {});
       }
 
+
       DocumentSnapshot parentSnapshot = await FirebaseFirestore.instance
           .collection('students')
           .doc(currentUser!.email)
           .collection('parents')
           .doc(currentUser!.email)
           .get();
+
 
       if (parentSnapshot.exists) {
         Map<String, dynamic> data =
@@ -93,6 +103,7 @@ class _StudentInformationState extends State<StudentInformation> {
       );
     }
   }
+
 
   bool validateFields() {
     return fullNameController.text.isNotEmpty &&
@@ -114,12 +125,56 @@ class _StudentInformationState extends State<StudentInformation> {
         disabilities != 'Please choose';
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Student Information',style: TextStyle(color: Colors.white),),
+        title: Text('Student Information', style: TextStyle(color: Colors.white)),
         backgroundColor: Color(0xFF1C5153),
+        iconTheme: IconThemeData(color: Colors.white), // Set back icon color to white
+        actions: [
+          IconButton(
+            icon: Icon(
+              isEditMode ? Icons.save : Icons.edit,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              if (isEditMode) {
+                if (validateFields()) {
+                  saveStudentInfo().then((success) {
+                    if (success) {
+                      setState(() {
+                        isEditMode = false;
+                      });
+                      Fluttertoast.showToast(
+                        msg: "Information updated successfully",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        backgroundColor: Colors.black.withOpacity(0.5),
+                        textColor: Colors.white,
+                        fontSize: 16.0,
+                      );
+                    }
+                  });
+                } else {
+                  Fluttertoast.showToast(
+                    msg: "Please fill in all required fields",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    backgroundColor: Colors.black.withOpacity(0.5),
+                    textColor: Colors.white,
+                    fontSize: 16.0,
+                  );
+                }
+              } else {
+                setState(() {
+                  isEditMode = true;
+                });
+              }
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -130,16 +185,19 @@ class _StudentInformationState extends State<StudentInformation> {
               CustomTextField(
                 controller: fullNameController,
                 labelText: 'Full Name *',
+                enabled: isEditMode,
               ),
               SizedBox(height: 10),
               CustomTextField(
                 controller: idController,
                 labelText: 'Identification Number *',
+                enabled: isEditMode,
               ),
               SizedBox(height: 10),
               CustomTextField(
                 controller: addressController,
                 labelText: 'Home Address *',
+                enabled: isEditMode,
               ),
               SizedBox(height: 10),
               Row(
@@ -149,6 +207,7 @@ class _StudentInformationState extends State<StudentInformation> {
                     child: CustomTextField(
                       controller: cityController,
                       labelText: 'City *',
+                      enabled: isEditMode,
                     ),
                   ),
                   SizedBox(width: 5),
@@ -157,6 +216,7 @@ class _StudentInformationState extends State<StudentInformation> {
                     child: CustomTextField(
                       controller: postcodeController,
                       labelText: 'Postcode *',
+                      enabled: isEditMode,
                     ),
                   ),
                   SizedBox(width: 5),
@@ -183,11 +243,13 @@ class _StudentInformationState extends State<StudentInformation> {
                         'Negeri Sembilan'
                       ],
                       value: state,
-                      onChanged: (value) {
-                        setState(() {
-                          state = value;
-                        });
-                      },
+                      onChanged: isEditMode
+                          ? (value) {
+                              setState(() {
+                                state = value;
+                              });
+                            }
+                          : null,
                     ),
                   ),
                 ],
@@ -196,11 +258,13 @@ class _StudentInformationState extends State<StudentInformation> {
               CustomTextField(
                 controller: studentPhoneController,
                 labelText: 'Phone Number (Student) *',
+                enabled: isEditMode,
               ),
               SizedBox(height: 10),
               CustomTextField(
                 controller: guardianPhoneController,
                 labelText: 'Phone Number (Parent/Guardian) *',
+                enabled: isEditMode,
               ),
               SizedBox(height: 10),
               DropdownField(
@@ -224,22 +288,26 @@ class _StudentInformationState extends State<StudentInformation> {
                   'Negeri Sembilan'
                 ],
                 value: birthPlace,
-                onChanged: (value) {
-                  setState(() {
-                    birthPlace = value;
-                  });
-                },
+                onChanged: isEditMode
+                    ? (value) {
+                        setState(() {
+                          birthPlace = value;
+                        });
+                      }
+                    : null,
               ),
               SizedBox(height: 10),
               DropdownField(
                 labelText: 'Marital Status *',
                 items: ['Please choose', 'Single', 'Married'],
                 value: maritalStatus,
-                onChanged: (value) {
-                  setState(() {
-                    maritalStatus = value;
-                  });
-                },
+                onChanged: isEditMode
+                    ? (value) {
+                        setState(() {
+                          maritalStatus = value;
+                        });
+                      }
+                    : null,
               ),
               SizedBox(height: 10),
               DropdownField(
@@ -258,11 +326,13 @@ class _StudentInformationState extends State<StudentInformation> {
                   'others'
                 ],
                 value: numberOfSiblings,
-                onChanged: (value) {
-                  setState(() {
-                    numberOfSiblings = value;
-                  });
-                },
+                onChanged: isEditMode
+                    ? (value) {
+                        setState(() {
+                          numberOfSiblings = value;
+                        });
+                      }
+                    : null,
               ),
               SizedBox(height: 10),
               DropdownField(
@@ -281,66 +351,78 @@ class _StudentInformationState extends State<StudentInformation> {
                   'others'
                 ],
                 value: orderOfSiblings,
-                onChanged: (value) {
-                  setState(() {
-                    orderOfSiblings = value;
-                  });
-                },
+                onChanged: isEditMode
+                    ? (value) {
+                        setState(() {
+                          orderOfSiblings = value;
+                        });
+                      }
+                    : null,
               ),
               SizedBox(height: 10),
               DropdownField(
                 labelText: 'Are you a person with disabilities? *',
                 items: ['Please choose', 'Yes', 'No'],
                 value: disabilities,
-                onChanged: (value) {
-                  setState(() {
-                    disabilities = value;
-                  });
-                },
+                onChanged: isEditMode
+                    ? (value) {
+                        setState(() {
+                          disabilities = value;
+                        });
+                      }
+                    : null,
               ),
               SizedBox(height: 20),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () async {
-                    if (!validateFields()) {
-                      Fluttertoast.showToast(
-                        msg: "Please fill in all required fields",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.BOTTOM,
-                        backgroundColor: Colors.black.withOpacity(0.5),
-                        textColor: Colors.white,
-                        fontSize: 16.0,
-                      );
-                    } else {
-                      // Check if all required information is saved
-                      bool allInformationSaved = await saveStudentInfo();
-                      
-                      // Navigate to ParentAgreement with allInformationSaved status
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ParentInfo1()
-                        ),
-                      );
-                    }
-                  },
-                  child: Text('Save'),
-                   style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFD3E3D1), // Custom button color
-                foregroundColor: Colors.black,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                minimumSize: Size(150, 50),
-              ),
-                ),
-              ),
             ],
           ),
         ),
       ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ElevatedButton(
+          style: ButtonStyle(
+            backgroundColor: isEditMode ? MaterialStateProperty.all(Colors.grey) : MaterialStateProperty.all(Color(0xFF1C5153)),
+            foregroundColor: MaterialStateProperty.all(Colors.white),
+            shape: MaterialStateProperty.all(RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
+            )),
+            padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 40, vertical: 16)), // Adjust padding for button width
+          ),
+          onPressed: isEditMode
+              ? null
+              : () {
+                  if (validateFields()) {
+                    saveStudentInfo().then((success) {
+                      if (success) {
+                        Fluttertoast.showToast(
+                          msg: "Information updated successfully",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          backgroundColor: Colors.black.withOpacity(0.5),
+                          textColor: Colors.white,
+                          fontSize: 16.0,
+                        );
+                        // Navigate to the next screen
+                        Navigator.pushNamed(context, '/parent_info_1');
+                      }
+                    });
+                  } else {
+                    Fluttertoast.showToast(
+                      msg: "Please fill in all required fields",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                      backgroundColor: Colors.black.withOpacity(0.5),
+                      textColor: Colors.white,
+                      fontSize: 16.0,
+                    );
+                  }
+                },
+          child: Text('Next'),
+        ),
+      ),
     );
   }
+
 
   Future<bool> saveStudentInfo() async {
     try {
@@ -364,9 +446,8 @@ class _StudentInformationState extends State<StudentInformation> {
           'disabilities': disabilities,
         });
 
-        // Assuming parent info is also saved here
 
-        return true; // Return true if all information is successfully saved
+        return true;
       }
     } catch (e) {
       Fluttertoast.showToast(
@@ -378,19 +459,67 @@ class _StudentInformationState extends State<StudentInformation> {
         fontSize: 16.0,
       );
     }
-    return false; // Return false if saving fails
+    return false;
+  }
+
+
+  Future<bool> deleteStudentInfo() async {
+    try {
+      if (currentUser != null) {
+        await FirebaseFirestore.instance
+            .collection('students')
+            .doc(currentUser!.email)
+            .delete();
+
+
+        return true;
+      }
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Failed to delete data",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.black.withOpacity(0.5),
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+    return false;
+  }
+
+
+  void clearFormFields() {
+    fullNameController.clear();
+    idController.clear();
+    addressController.clear();
+    cityController.clear();
+    postcodeController.clear();
+    state = null;
+    studentPhoneController.clear();
+    guardianPhoneController.clear();
+    birthPlace = null;
+    maritalStatus = null;
+    numberOfSiblings = null;
+    orderOfSiblings = null;
+    disabilities = null;
+    setState(() {});
   }
 }
+
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final String labelText;
+  final bool enabled;
+
 
   const CustomTextField({
     Key? key,
     required this.controller,
     required this.labelText,
+    this.enabled = true,
   }) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
@@ -404,24 +533,28 @@ class CustomTextField extends StatelessWidget {
             borderRadius: BorderRadius.circular(30.0),
           ),
         ),
+        enabled: enabled,
       ),
     );
   }
 }
 
+
 class DropdownField extends StatelessWidget {
   final String labelText;
   final List<String> items;
   final String? value;
-  final ValueChanged<String?> onChanged;
+  final ValueChanged<String?>? onChanged;
+
 
   const DropdownField({
     Key? key,
     required this.labelText,
     required this.items,
     required this.value,
-    required this.onChanged,
+    this.onChanged,
   }) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
@@ -446,3 +579,4 @@ class DropdownField extends StatelessWidget {
     );
   }
 }
+

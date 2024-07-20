@@ -1,10 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginTeacher extends StatelessWidget {
+class LoginTeacher extends StatefulWidget {
+  @override
+  _LoginTeacherState createState() => _LoginTeacherState();
+}
+
+class _LoginTeacherState extends State<LoginTeacher> {
   final TextEditingController idController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    loadID();
+  }
+
+  Future<void> loadID() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? savedID = prefs.getString('savedID');
+    if (savedID != null) {
+      setState(() {
+        idController.text = savedID;
+      });
+    }
+  }
+
+  Future<void> saveID(String id) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('savedID', id);
+  }
 
   Future<void> _login(BuildContext context) async {
     try {
@@ -36,6 +63,9 @@ class LoginTeacher extends StatelessWidget {
         );
         return;
       }
+
+      // Save the Teacher ID
+      await saveID(teacherID);
 
       // Display success message and navigate to the dashboard
       ScaffoldMessenger.of(context).showSnackBar(

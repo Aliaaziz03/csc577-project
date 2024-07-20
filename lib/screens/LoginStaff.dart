@@ -98,16 +98,18 @@ class _PinScreenState extends State<PinScreen> {
                   ElevatedButton(
                     onPressed: _verifyPin,
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                      padding: EdgeInsets.symmetric(horizontal: 290, vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
-                      backgroundColor: Colors.grey,
+                      backgroundColor: Colors.grey[400],
+                      foregroundColor: Colors.black
                     ),
                     child: Text(
                       'Login',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold
                       ),
                     ),
                   ),

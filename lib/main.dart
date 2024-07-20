@@ -28,8 +28,12 @@ void main() async {
   );
 
 
+
+
   runApp(MyApp());
 }
+
+
 
 
 class MyApp extends StatelessWidget {
@@ -53,7 +57,7 @@ class MyApp extends StatelessWidget {
         '/register': (context) => RegisterScreen(),
         '/student_dashboard': (context) => StudentDashboard(),
         '/teacher_dashboard': (context) => TeacherDashboard(),
-         '/staff_dashboard': (context) => StaffDashboard(),
+        '/staff_dashboard': (context) => StaffDashboard(),
         '/student_info': (context) => StudentInformation(),
         '/parent_info_1': (context) => ParentInfo1(),
         '/parent_info_2': (context) => ParentInfo2(),
@@ -63,5 +67,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+
 
 

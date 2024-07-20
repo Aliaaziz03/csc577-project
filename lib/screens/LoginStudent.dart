@@ -1,9 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginStudent extends StatelessWidget {
+class LoginStudent extends StatefulWidget {
+  @override
+  _LoginStudentState createState() => _LoginStudentState();
+}
+
+class _LoginStudentState extends State<LoginStudent> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    loadEmail();
+  }
+
+  Future<void> loadEmail() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? savedEmail = prefs.getString('savedEmail');
+    if (savedEmail != null) {
+      setState(() {
+        emailController.text = savedEmail;
+      });
+    }
+  }
+
+  Future<void> saveEmail(String email) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('savedEmail', email);
+  }
 
   Future<void> _login(BuildContext context) async {
     try {
@@ -11,7 +38,7 @@ class LoginStudent extends StatelessWidget {
         email: emailController.text,
         password: passwordController.text,
       );
-      // Display success message
+      await saveEmail(emailController.text); // Save email on successful login
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("! أهلاً وسهلاً")),
       );
@@ -25,7 +52,6 @@ class LoginStudent extends StatelessWidget {
       } else {
         errorMessage = 'Login failed. Please try again.';
       }
-      // Display error message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(errorMessage)),
       );
@@ -63,7 +89,6 @@ class LoginStudent extends StatelessWidget {
                   ),
                 ),
               ),
-             
               Container(
                 height: 550,
                 decoration: BoxDecoration(
@@ -159,3 +184,4 @@ class LoginStudent extends StatelessWidget {
     );
   }
 }
+
