@@ -8,7 +8,7 @@ class OnboardingScreen extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           Image.asset(
-            'assets/bg.jpg',
+            'assets/onboard_bg.png',
             fit: BoxFit.cover,
           ),
           Center(

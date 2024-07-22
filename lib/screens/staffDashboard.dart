@@ -108,27 +108,11 @@ class _StaffDashboardState extends State<StaffDashboard> {
                 SizedBox(height: 30), // Space at the bottom
               ],
             ),
-            Positioned(
-              top: 60, // Adjust this value to position the image below the containers
-              right: 16, // Adjust this value to position the image near the right side
-              child: Image.asset(
-                'assets/star.png',
-                width: 100, // Adjust the width as needed
-                height: 100, // Adjust the height as needed
-              ),
-            ),
-            Positioned(
-              bottom: 16, // Adjust this value to position the image above the containers
-              left: 16, // Adjust this value to position the image near the left side
-              child: Image.asset(
-                'assets/people.png',
-                width: 150, // Adjust the width as needed
-                height: 150, // Adjust the height as needed
-              ),
-            ),
+           
           ],
-        ),
-      );
+        ) 
+        );
+      
     
   }
 }

@@ -98,7 +98,7 @@ class _PinScreenState extends State<PinScreen> {
                   ElevatedButton(
                     onPressed: _verifyPin,
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 290, vertical: 15),
+                      padding: EdgeInsets.symmetric(horizontal: 200, vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
